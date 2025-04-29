@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Customer Profile</title>
+</head>
+<body>
+    <h1>Customer Profile</h1>
+
+    <!-- Display customer information -->
+    <p>Name: {{ customer_info.first_name }} {{ customer_info.last_name }}</p>
+    <p>Email: {{ customer_info.email }}</p>
+    <!-- Add more fields as necessary -->
+
+    <!-- Button to go back to the main page -->
+    <!-- Button to go back to the main page -->
+<a href="{{ url_for('index') }}"><button>Back to Main Page</button></a>
+
+</body>
+</html>

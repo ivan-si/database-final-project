@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Purchase Ticket</title>
+</head>
+<body>
+    <h1>Purchase Ticket for Flight ID: {{ flight_id }}</h1>
+    <form action="{{ url_for('purchaseTicket', flight_id=flight_id) }}" method="post">
+        <!-- Add necessary input fields for ticket purchase -->
+        <input type="text" name="passenger_name" placeholder="Passenger Name" required><br>
+        <input type="email" name="passenger_email" placeholder="Passenger Email" required><br>
+        <!-- Add more fields as necessary -->
+        <input type="submit" value="Purchase Ticket">
+    </form>
+    <a href="{{ url_for('index') }}">Back to Home</a>
+</body>
+</html>

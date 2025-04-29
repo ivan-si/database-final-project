@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Track My Spending</title>
+</head>
+<body>
+    <h1>Track My Spending</h1>
+
+    <!-- Form for custom date range -->
+    <form action="{{ url_for('trackSpending') }}" method="post">
+        <label for="start_date">Start Date:</label>
+        <input type="date" id="start_date" name="start_date">
+        <label for="end_date">End Date:</label>
+        <input type="date" id="end_date" name="end_date">
+        <input type="submit" value="Track Spending">
+    </form>
+
+    <h2>Spending from {{ start_date }} to {{ end_date }}</h2>
+
+    <!-- Display spending data -->
+    <table>
+        <tr>
+            <th>Month</th>
+            <th>Total Spending</th>
+        </tr>
+        {% for record in spending_data %}
+        <tr>
+            <td>{{ record['month'] }}/{{ record['year'] }}</td>
+            <td>${{ record['total_spending'] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <a href="{{ url_for('index') }}"><button>Back to Main Page</button></a>
+</body>
+</html>

@@ -1,0 +1,59 @@
+@app.route('/viewFrequentCustomersForm', methods=['GET', 'POST'])
+def viewFrequentCustomersForm():
+    # Check if the user is logged in and authorized
+    if 'username' not in session or not is_airline_staff(session['username']):
+        return redirect(url_for('login'))  # Redirect unauthorized users
+
+    customer_details = None
+
+    if 'customerEmail' in request.args:
+        customer_email = request.form['customerEmail']
+        airline_name = get_airline_name(session['username'])
+
+        # Get the most frequent customer within the last year
+        cursor = conn.cursor()
+        query_most_frequent_customer = """
+        SELECT email, COUNT(*) as total_flights
+        FROM Ticket
+        WHERE purchase_date_time >= NOW() - INTERVAL 1 YEAR
+          AND email = %s
+        GROUP BY email
+        ORDER BY total_flights DESC
+        LIMIT 1
+        """
+        cursor.execute(query_most_frequent_customer, (customer_email,))
+        result_most_frequent_customer = cursor.fetchone()
+
+        most_frequent_customer = {
+            'email': result_most_frequent_customer['email'],
+            'total_flights': result_most_frequent_customer['total_flights']
+        } if result_most_frequent_customer else None
+
+        # Get the customer's flights on the airline
+        query_customer_flights = """
+        SELECT f.airline_name, f.flight_number, f.departure_date_time, f.arrival_date_time, f.base_price
+        FROM Flight f
+        JOIN Ticket t ON f.airline_name = t.airline_name
+                     AND f.flight_number = t.flight_number
+                     AND f.departure_date_time = t.departure_date_time
+        WHERE t.email = %s
+          AND f.airline_name = %s
+        """
+        cursor.execute(query_customer_flights, (customer_email, airline_name))
+        result_customer_flights = cursor.fetchall()
+
+        customer_flights = [{
+            'airline_name': flight['airline_name'],
+            'flight_number': flight['flight_number'],
+            'departure_date_time': flight['departure_date_time'],
+            'arrival_date_time': flight['arrival_date_time'],
+            'base_price': flight['base_price'],
+        } for flight in result_customer_flights]
+
+        customer_details = {
+            'most_frequent_customer': most_frequent_customer,
+            'airline_name': airline_name,
+            'flights': customer_flights
+        }
+
+    return render_template('viewFrequentCustomersForm.html', customer_details=customer_details)
